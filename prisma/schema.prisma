@@ -7,27 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id          Int       @id @default(autoincrement())
-  category_id Int
-  name        String
-  price       Float
-  description String?
-  unit_in_stock Int
-  picture String?
-  Category    Category @relation(fields: [category_id], references: [id])
+model Travel {
+  id                  Int       @id @default(autoincrement())
+  start_location_id   Int
+  end_location_id     Int
+  travel_date         DateTime
+  transportation_type String
+  notes               String?
+  picture             String?
+  startLocation       Location  @relation("StartLocation", fields: [start_location_id], references: [id])
+  endLocation         Location  @relation("EndLocation", fields: [end_location_id], references: [id])
+  photos              Photo[]  
 }
 
-model Category {
-  id    Int      @id @default(autoincrement())
-  name  String
-  products Product[]
+model Location {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  TravelsFrom Travel[]  @relation("StartLocation")
+  TravelsTo   Travel[]  @relation("EndLocation")
 }
 
 model User {
- id Int @id @default(autoincrement())
- name String
- email String
- password String
- picture String?
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  picture  String?
+}
+
+model Photo {
+  id          Int      @id @default(autoincrement())
+  title       String  
+  description String?  
+  filename    String  
+  travelId    Int     
+  travel      Travel   @relation(fields: [travelId], references: [id]) // ความสัมพันธ์กับ Travel
 }
